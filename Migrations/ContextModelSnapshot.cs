@@ -31,7 +31,8 @@ namespace VentaProductos.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ApellidoCliente")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Dni")
                         .HasColumnType("int");
@@ -46,6 +47,35 @@ namespace VentaProductos.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.DetalleVenta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdProducto")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdVenta")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VentaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("VentaId");
+
+                    b.ToTable("DetalleVenta");
                 });
 
             modelBuilder.Entity("VentaProductos.Models.Producto", b =>
@@ -82,22 +112,62 @@ namespace VentaProductos.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("FehcaVenta")
-                        .HasMaxLength(100)
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FechaVenta")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("Finalizada")
+                    b.Property<bool>("Finalizada")
                         .HasColumnType("bit");
 
                     b.Property<int>("IdCliente")
                         .HasColumnType("int");
 
-                    b.Property<string>("RelacionDetalleVenta")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
+                    b.HasIndex("ClienteId");
+
                     b.ToTable("Ventas");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.DetalleVenta", b =>
+                {
+                    b.HasOne("VentaProductos.Models.Producto", "Producto")
+                        .WithMany("DetalleVenta")
+                        .HasForeignKey("ProductoId");
+
+                    b.HasOne("VentaProductos.Models.Venta", "Venta")
+                        .WithMany("DetalleVenta")
+                        .HasForeignKey("VentaId");
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Venta");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.Venta", b =>
+                {
+                    b.HasOne("VentaProductos.Models.Cliente", "Cliente")
+                        .WithMany("Venta")
+                        .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.Cliente", b =>
+                {
+                    b.Navigation("Venta");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.Producto", b =>
+                {
+                    b.Navigation("DetalleVenta");
+                });
+
+            modelBuilder.Entity("VentaProductos.Models.Venta", b =>
+                {
+                    b.Navigation("DetalleVenta");
                 });
 #pragma warning restore 612, 618
         }

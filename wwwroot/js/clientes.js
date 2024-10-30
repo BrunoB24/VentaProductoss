@@ -1,75 +1,90 @@
 function ObtenerClientes() {
-    fetch('https://localhost:7245/api/clientes')
+    fetch('https://localhost:7245/Cliente')
     .then(response => response.json())
     .then(data => MostrarClientes(data))
     .catch(error => console.log("No se pudo acceder al servicio.", error));
 }
 
-
 function MostrarClientes(data) {
-    let tbody = document.getElementById('todosLosClientes');
-    tbody.innerHTML = '';
-
-    data.forEach(element => {
-        let tr = tbody.insertRow();
-
-        let td0 = tr.insertCell(0);
-        let tdId = document.createTextNode(element.id)
-        td0.appendChild(tdId)
-
-        let td1 = tr.insertCell(1);
-        let tdNombreCliente = document.createTextNode(element.nombreCliente)
-        td1.appendChild(tdNombreCliente)
-
-        let td2 = tr.insertCell(2);
-        let tdApellidoCliente = document.createTextNode(element.apellidoCliente)
-        td2.appendChild(tdApellidoCliente)
-
-        let td3 = tr.insertCell(3);
-        let tdDNI = document.createTextNode(element.dni)
-        td3.appendChild(tdDNI)
-
-        let td4 = tr.insertCell(4);
-        let tdSaldo = document.createTextNode(element.saldo)
-        td4.appendChild(tdSaldo)
-
-        let btnEditar = document.createElement('button');
-        btnEditar.innerText = 'Modificar';
-        btnEditar.setAttribute('class', 'btn btn-info');
-        btnEditar.setAttribute('onclick', `BuscarClienteId(${element.id})`);
-        let td5 = tr.insertCell(5);
-        td5.appendChild(btnEditar);
-
-        let btnEliminar = document.createElement('button');
-        btnEliminar.innerText = 'Eliminar';
-        btnEliminar.setAttribute('class', 'btn btn-danger');
-        btnEliminar.setAttribute('onclick', `EliminarCliente(${element.id})`);
-        let td6 = tr.insertCell(6);
-        td6.appendChild(btnEliminar);
-    });
+    $("#todosLosClientes").empty();
+    $.each(data, function(index, item) {
+        $('#todosLosClientes').append(
+            "<tr>",
+            "<td>" + item.idCliente + "</td>",
+            "<td>" + item.nombre + "</td>",
+            "<td>" + item.apellido + "</td>",
+            "<td>" + item.dni + "</td>",
+            "<td>" + item.sueldo + "</td>",
+            "<td><button class='btn btn-info' onclick='BuscarClienteId(" + item.id + ")'>Modificar</button></td>",
+            "<td><button class='btn btn-danger' onclick='EliminarCliente(" + item.id + ")'>Eliminar</button></td>",
+            "</tr>"
+        )
+    })
 }
+// function MostrarClientes(data) {
+//     let tbody = document.getElementById('todosLosClientes');
+//     tbody.innerHTML = '';
+
+//     data.forEach(element => {
+//         let tr = tbody.insertRow();
+
+//         let td0 = tr.insertCell(0);
+//         let tdId = document.createTextNode(element.id)
+//         td0.appendChild(tdId)
+
+//         let td1 = tr.insertCell(1);
+//         let tdNombreCliente = document.createTextNode(element.nombreCliente)
+//         td1.appendChild(tdNombreCliente)
+
+//         let td2 = tr.insertCell(2);
+//         let tdApellidoCliente = document.createTextNode(element.apellidoCliente)
+//         td2.appendChild(tdApellidoCliente)
+
+//         let td3 = tr.insertCell(3);
+//         let tdDNI = document.createTextNode(element.dni)
+//         td3.appendChild(tdDNI)
+
+//         let td4 = tr.insertCell(4);
+//         let tdSaldo = document.createTextNode(element.saldo)
+//         td4.appendChild(tdSaldo)
+
+//         let btnEditar = document.createElement('button');
+//         btnEditar.innerText = 'Modificar';
+//         btnEditar.setAttribute('class', 'btn btn-info');
+//         btnEditar.setAttribute('onclick', `BuscarClienteId(${element.id})`);
+//         let td5 = tr.insertCell(5);
+//         td5.appendChild(btnEditar);
+
+//         let btnEliminar = document.createElement('button');
+//         btnEliminar.innerText = 'Eliminar';
+//         btnEliminar.setAttribute('class', 'btn btn-danger');
+//         btnEliminar.setAttribute('onclick', `EliminarCliente(${element.id})`);
+//         let td6 = tr.insertCell(6);
+//         td6.appendChild(btnEliminar);
+//     });
+// }
  
 
 function CrearCliente() {
     
 
-    var Nombrecl= document.getElementById("Nombre").value;
-     if (Nombrecl == "" || Nombrecl == null) {
+    var nombrecliente= document.getElementById("Nombre").value;
+     if (nombrecliente == "" || nombrecliente == null) {
          return mensajesError('#error', null, "Por favor ingrese un Nombre para el Cliente.");
     }
 
-    var Dnicl= document.getElementById("DNI").value;
-    if (Dnicl == "" || Dnicl == null) {
+    var dnicliente= document.getElementById("DNI").value;
+    if (dnicliente == "" || dnicliente == null) {
         return mensajesError('#error', null, "Por favor ingrese un DNI para el Cliente.");
     }
 
-    var Apellidocl = document.getElementById("Apellido").value;
-     if (Apellidocl == "" || Apellidocl == null) {
+    var apellidocliente = document.getElementById("Apellido").value;
+     if (apellidocliente == "" || apellidocliente == null) {
          return mensajesError('#error', null, "Por favor ingrese un Apellido para el Cliente.");
     }
 
-    var Saldocl= document.getElementById("Saldo").value;
-     if (Saldocl == "" || Saldocl == null) {
+    var clientesaldo= document.getElementById("Saldo").value;
+     if (clientesaldo == "" || clientesaldo == null) {
          return mensajesError('#error', null, "Por favor ingrese un DNI para el Cliente.");
     }
 
@@ -139,7 +154,7 @@ function BuscarClienteId(id) {
         document.getElementById("IdCliente").value = data.id;
         document.getElementById("Nombre").value = data.nombreCliente;
         document.getElementById("Apellido").value = data.apellidoCliente;
-        document.getElementById("DNIr").value = data.dni;
+        document.getElementById("DNI").value = data.dni;
         document.getElementById("Saldo").value = data.saldo;
 
         $('#modalEditarCliente').modal('show');
@@ -153,22 +168,22 @@ function EditarCliente() {
 
    
 
-    var Nombrecl= document.getElementById("DNIEditar").value;
-    if (Nombrecl == "" || Nombrecl == null) {
+    var nombrecliente= document.getElementById("NombreEditar").value;
+    if (nombrecliente == "" || nombrecliente == null) {
         return mensajesError('#errorEditar', null, "Por favor ingrese un Nombre para el Cliente.");
     }
-    var DniCl= document.getElementById("DNIEditar").value;
-    if (DniCl == "" || DniCl == null) {
-        return mensajesError('#errorEditar', null, "Por favor ingrese un DNI para el Cliente.");
+    var dnicliente= document.getElementById("ApellidoEditar").value;
+    if (dnicliente == "" ||dnicliente == null) {
+        return mensajesError('#errorEditar', null, "Por favor ingrese un Apellido para el Cliente.");
     }
 
-    var Apellidocl= document.getElementById("DNI").value;
-     if (Apellidocl == "" || Apellidocl == null) {
-         return mensajesError('#errorEditar', null, "Por favor ingrese un Apellido para el Cliente.");
+    var apellidocliente= document.getElementById("DNIEditar").value;
+     if (apellidocliente == "" ||apellidocliente == null) {
+         return mensajesError('#errorEditar', null, "Por favor ingrese un DNI para el Cliente.");
     }
 
-    var Saldocl= document.getElementById("DNI").value;
-     if (Saldocl == "" || Saldocl == null) {
+    var clientesaldo= document.getElementById("SaldoEditar").value;
+     if ( clientesaldo == "" ||  clientesaldo == null) {
          return mensajesError('#errorEditar', null, "Por favor ingrese un saldo para el Cliente.");
     }
 

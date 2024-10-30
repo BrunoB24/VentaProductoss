@@ -24,7 +24,8 @@ namespace VentaProductos.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Venta>>> GetVentas()
         {
-            return await _context.Ventas.ToListAsync();
+           var venta = await _context.Ventas.Include(x => x.Cliente).ToListAsync();
+            return venta;
         }
 
         // GET: api/VentaControllers/5
@@ -69,7 +70,7 @@ namespace VentaProductos.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(venta);
         }
 
         // POST: api/VentaControllers
@@ -77,6 +78,15 @@ namespace VentaProductos.Controllers
         [HttpPost]
         public async Task<ActionResult<Venta>> PostVenta(Venta venta)
         {
+
+            var cliente = await _context.Clientes.Include(c => c.Venta)
+                .FirstOrDefaultAsync(c => c.Id == venta.IdCliente);
+
+            if (cliente != null && cliente.Venta != null && cliente.Venta.Any(v => v.Finalizada != true))
+            {
+                return BadRequest(new { message = "El Cliente tiene una venta pendiente." });
+            }
+
             _context.Ventas.Add(venta);
             await _context.SaveChangesAsync();
 
@@ -91,6 +101,11 @@ namespace VentaProductos.Controllers
             if (venta == null)
             {
                 return NotFound();
+            }
+
+            if (!venta.Finalizada)
+            {
+                return BadRequest("No se puede eliminar porque hay una venta pendiente.");
             }
 
             _context.Ventas.Remove(venta);

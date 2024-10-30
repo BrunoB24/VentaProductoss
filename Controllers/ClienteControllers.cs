@@ -14,7 +14,6 @@ namespace VentaProductos.Controllers
     public class ClienteControllers : ControllerBase
     {
         private readonly Context _context;
-
         public ClienteControllers(Context context)
         {
             _context = context;
@@ -22,36 +21,36 @@ namespace VentaProductos.Controllers
 
         // GET: api/ClienteControllers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Venta>>> GetVentas()
+        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
-            return await _context.Ventas.ToListAsync();
+            return await _context.Clientes.ToListAsync();
         }
 
         // GET: api/ClienteControllers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Venta>> GetVenta(int id)
+        public async Task<ActionResult<Cliente>> GetCliente(int id)
         {
-            var venta = await _context.Ventas.FindAsync(id);
+            var cliente = await _context.Clientes.FindAsync(id);
 
-            if (venta == null)
+            if (cliente == null)
             {
                 return NotFound();
             }
 
-            return venta;
+            return cliente;
         }
 
         // PUT: api/ClienteControllers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVenta(int id, Venta venta)
+        public async Task<IActionResult> PutCliente(int id, Cliente cliente)
         {
-            if (id != venta.Id)
+            if (id != cliente.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(venta).State = EntityState.Modified;
+            _context.Entry(cliente).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +58,7 @@ namespace VentaProductos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VentaExists(id))
+                if (!ClienteExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +71,47 @@ namespace VentaProductos.Controllers
             return NoContent();
         }
 
+        private bool ClienteExists(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         // POST: api/ClienteControllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Venta>> PostVenta(Venta venta)
+        public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
         {
-            _context.Ventas.Add(venta);
+            _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVenta", new { id = venta.Id }, venta);
+            return CreatedAtAction("GetCliente", new { id = cliente.Id }, cliente);
         }
 
         // DELETE: api/ClienteControllers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVenta(int id)
+        public async Task<IActionResult> DeleteCliente(int id)
         {
-            var venta = await _context.Ventas.FindAsync(id);
-            if (venta == null)
+            var cliente = await _context.Clientes.FindAsync(id);
+            if (cliente == null)
             {
                 return NotFound();
             }
 
-            _context.Ventas.Remove(venta);
+           if (cliente.Venta != null && cliente.Venta.Count != 0)
+             {
+                return BadRequest("No se puede eliminar el cliente porque tiene ventas asociadas.");
+             }
+
+
+            _context.Clientes.Remove(cliente);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool VentaExists(int id)
+        private bool ClientesExists(int id)
         {
-            return _context.Ventas.Any(e => e.Id == id);
+            return _context.Clientes.Any(e => e.Id == id);
         }
     }
 }

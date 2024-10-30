@@ -7,51 +7,52 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VentaProductos.Models;
 
+
 namespace VentaProductos.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class ProductoControllers : ControllerBase
+    public class ProductosController : ControllerBase
     {
         private readonly Context _context;
 
-        public ProductoControllers(Context context)
+        public ProductosController(Context context)
         {
             _context = context;
         }
 
-        // GET: api/ProductoControllers
+        // GET: api/Productos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Venta>>> GetVentas()
+        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
         {
-            return await _context.Ventas.ToListAsync();
+            return await _context.Productos.ToListAsync();
         }
 
-        // GET: api/ProductoControllers/5
+        // GET: api/Productos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Venta>> GetVenta(int id)
+        public async Task<ActionResult<Producto>> GetProducto(int id)
         {
-            var venta = await _context.Ventas.FindAsync(id);
+            var producto = await _context.Productos.FindAsync(id);
 
-            if (venta == null)
+            if (producto == null)
             {
                 return NotFound();
             }
 
-            return venta;
+            return producto;
         }
 
-        // PUT: api/ProductoControllers/5
+        // PUT: api/Productos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVenta(int id, Venta venta)
+        public async Task<IActionResult> PutProducto(int id, Producto producto)
         {
-            if (id != venta.Id)
+            if (id != producto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(venta).State = EntityState.Modified;
+            _context.Entry(producto).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +60,7 @@ namespace VentaProductos.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VentaExists(id))
+                if (!ProductoExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +73,45 @@ namespace VentaProductos.Controllers
             return NoContent();
         }
 
-        // POST: api/ProductoControllers
+        // POST: api/Productos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Venta>> PostVenta(Venta venta)
+        public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
-            _context.Ventas.Add(venta);
+            _context.Productos.Add(producto);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVenta", new { id = venta.Id }, venta);
+            return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
         }
 
-        // DELETE: api/ProductoControllers/5
+        // DELETE: api/Productos/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVenta(int id)
+        public async Task<IActionResult> DeleteProducto(int id)
         {
-            var venta = await _context.Ventas.FindAsync(id);
-            if (venta == null)
+            var producto = await _context.Productos.Include(p => p.DetalleVenta).FirstOrDefaultAsync(p => p.Id == id);
+
+            if (producto == null)
             {
                 return NotFound();
             }
 
-            _context.Ventas.Remove(venta);
+            // Verifica si el producto está asociado a cualquier detalle de venta
+            if (producto.DetalleVenta != null && producto.DetalleVenta.Any())
+            {
+                return BadRequest("No se puede eliminar el producto, está asociado a una venta.");
+            }
+
+            _context.Productos.Remove(producto);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool VentaExists(int id)
+
+        private bool ProductoExists(int id)
         {
-            return _context.Ventas.Any(e => e.Id == id);
+            return _context.Productos.Any(e => e.Id == id);
         }
     }
 }
+

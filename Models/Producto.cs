@@ -1,4 +1,3 @@
-
 using System.ComponentModel.DataAnnotations;
 
 namespace VentaProductos.Models
@@ -21,8 +20,9 @@ namespace VentaProductos.Models
        
         [Range(0.01, double.MaxValue, ErrorMessage = "Debe poner un precio de venta.")]
         public float PrecioVenta { get; set; }
+
+         public virtual ICollection<DetalleVenta>? DetalleVenta { get; set; }
+
     }
 }
-
-    
 
